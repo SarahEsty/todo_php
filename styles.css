@@ -1,0 +1,84 @@
+.heading {
+    text-align: center;
+    color: black;
+}
+
+tr:hover {
+    background: #f2f6fa;
+}
+
+.task {
+    text-align: left;
+    color: purple;
+}
+
+i {
+    text-align: center;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 2px 6px;
+
+}
+
+i:hover {
+    font-size: 18px;
+}
+
+.delete i {
+    color: #f0182a;
+}
+
+.delete i:hover {
+    color: #f7636f;
+}
+
+.edit i {
+    color: #4c8df5;
+}
+
+.edit i:hover {
+    color: #4c8df5;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    font-size: 18px;
+}
+
+.task_item {
+    text-decoration: none;
+    color: #2559e9;
+    font-size: 16px;
+}
+
+.task_item:hover {
+    font-size: 17px;
+    color: blue;
+}
+
+.done {
+    color: green !important;
+
+}
+
+.due_date {
+    color: red;
+}
+
+
+/* date picker style */
+.datepicker td,
+.datepicker th {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.85rem;
+}
+
+.datepicker {
+    margin-bottom: 3rem;
+}
+
+.detail {
+    text-align: left;
+}
