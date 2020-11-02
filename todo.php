@@ -13,16 +13,8 @@ require_once "./base.php";
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <!-- 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
-        integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
-        crossorigin="anonymous" /> -->
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css"
-        integrity="sha512-YdYyWQf8AS4WSB0WWdc3FbQ3Ypdm0QCWD2k4hgfqbQbRCJBEgX0iAegkl2S1Evma5ImaVXLBeUkIlP6hQ1eYKQ=="
-        crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.css">
+
     <link rel="stylesheet" href="./styles.css">
 
 </head>
@@ -84,17 +76,17 @@ require_once "./base.php";
 
                 <td> <?php echo $i; ?> </td>
                 <td
-                    class="task <?php echo strtotime($row['dueDate']) > (date('g:ia \o\n D jS M Y')) ? null : 'due_date' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                    class="task <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
                     <?php echo $row['task']; ?>
                 </td>
 
                 <td
-                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('g:ia \o\n D jS M Y')) ? null : 'due_date' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
                     <?php echo date('g:ia \o\n D jS M Y', strtotime($row['createdAt'])) ?>
                 </td>
 
                 <td
-                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('g:ia \o\n D jS M Y')) ? null : 'due_date' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
                     <?php echo date('g:ia \o\n D jS M Y', strtotime($row['dueDate'])) ?>
                 </td>
 
@@ -186,15 +178,6 @@ require_once "./base.php";
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
     integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous">
 </script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
-    integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ=="
-    crossorigin="anonymous"></script> -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"
-    integrity="sha512-RCgrAvvoLpP7KVgTkTctrUdv7C6t7Un3p1iaoPr1++3pybCyCsCZZN7QEHMZTcJTmcJ7jzexTO+eFpHk4OCFAg=="
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script>
-
 <script>
 $(document).ready(function() {
     var href;
@@ -215,30 +198,6 @@ $(document).ready(function() {
     $("#mark_todo").click(function() {
         window.location = href
     })
-
-    $('[data-toggle="datepicker"]').datepicker({
-        autoShow: false,
-        autoHide: true,
-        filter: function(date, view) {
-            if (new Date(date) < new Date()) {
-                return false;
-            }
-        }
-    });
-    // Picker.noConflict();
-    new Picker(document.querySelector('.js-time-picker'), {
-        format: 'HH:mm',
-        increment: {
-            hour: 1,
-            minute: 5,
-        },
-        date: new Date(),
-        headers: true,
-        text: {
-            title: 'What time is the task due?',
-        },
-    });
-
 
 });
 </script>
