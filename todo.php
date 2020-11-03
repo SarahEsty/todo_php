@@ -47,7 +47,22 @@ require_once "./base.php";
             </div>
         </div>
     </div>
-    <p><button onclick="sortTable()">Sort</button></p>
+
+    <div class="d-flex justify-content-end mb-2">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sort by
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" value='taskName'>Task Name</a>
+                <a class="dropdown-item" value='dueDate_asc'>Due Date - Asc</a>
+                <a class="dropdown-item" value='dueDate_desc'>Due Date - Desc</a>
+                <a class="dropdown-item" value='createdDate_asc'>Created Date - Asc</a>
+                <a class="dropdown-item" value='createdDate_desc'>Created Date - Desc</a>
+            </div>
+        </div>
+    </div>
 
     <table class="table table-borderless" id="myTable">
         <thead>
@@ -65,7 +80,11 @@ require_once "./base.php";
 
 
             <?php
+
+
             $task = getAllTask();
+
+            $task = switchArrayByDropdownValue('createdAt_asc', $task);
 
             ?>
             <?php
@@ -119,6 +138,9 @@ require_once "./base.php";
 
         </tbody>
     </table>
+
+    <!-- Create a hidden input -->
+    <input type='hidden' name='sortValue' value="createdDate_desc">
 
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -197,7 +219,18 @@ $(document).ready(function() {
 
     $("#mark_todo").click(function() {
         window.location = href
-    })
+    });
+
+    //Listen for a click on any of the dropdown items
+    $(".dropdown-menu a").click(function() {
+        //Get the value
+        var value = $(this).attr("value");
+        //Put the retrieved value into the hidden input
+
+        console.log(value, 'value')
+        $("input[name='sortValue']").val(value);
+
+    });
 
 });
 </script>
