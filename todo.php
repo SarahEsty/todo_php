@@ -81,10 +81,14 @@ require_once "./base.php";
 
             <?php
 
+            //how to acccess the value of the dropdown in php to dynamically change the values;
+            $sortBy = 'createdDate_desc';
 
-            $task = getAllTask();
+            if (isset($_GET['sortBy'])) {
+                $sortBy = $_GET['sortBy'];
+            }
 
-            $task = switchArrayByDropdownValue('createdAt_asc', $task);
+            $task = getAllTask($sortBy);
 
             ?>
             <?php
@@ -140,7 +144,9 @@ require_once "./base.php";
     </table>
 
     <!-- Create a hidden input -->
-    <input type='hidden' name='sortValue' value="createdDate_desc">
+    <form action="todo.php?sortBy=sortValue" method="get">
+        <input type='hidden' name='sortValue' value="createdDate_desc">
+    </form>
 
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -224,11 +230,9 @@ $(document).ready(function() {
     //Listen for a click on any of the dropdown items
     $(".dropdown-menu a").click(function() {
         //Get the value
-        var value = $(this).attr("value");
-        //Put the retrieved value into the hidden input
-
-        console.log(value, 'value')
-        $("input[name='sortValue']").val(value);
+        var sortBy = $(this).attr("value");
+        console.log(sortBy, 'sortBy');
+        window.location = 'todo.php?sortBy=' + sortBy;
 
     });
 

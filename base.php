@@ -2,7 +2,7 @@
 require_once './db_connect.php';
 
 
-function getAllTask()
+function getAllTask($dropdownValue)
 {
     $db = db();
     $tasks = mysqli_query($db, "SELECT * FROM tasks WHERE isDeleted = 0");
@@ -11,7 +11,7 @@ function getAllTask()
         $taskList[] = $row;
     }
 
-    return array_reverse($taskList);
+    return switchArrayByDropdownValue($dropdownValue, $taskList);
 }
 
 
@@ -56,7 +56,7 @@ function switchArrayByDropdownValue($dropdownValue, $list)
             usort($list, function ($a, $b) {
                 $a = $a['task'];
                 $b = $b['task'];
-                return ($a == $b) ? 0 : (($a > $b) ? -1 : 1);
+                return ($a == $b) ? 0 : (($a < $b) ? -1 : 1);
             });
             break;
 
