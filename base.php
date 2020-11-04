@@ -7,6 +7,7 @@ function getAllTask($dropdownValue)
     $db = db();
     $tasks = mysqli_query($db, "SELECT * FROM tasks WHERE isDeleted = 0");
     $taskList = [];
+
     while ($row = mysqli_fetch_array($tasks)) {
         $taskList[] = $row;
     }

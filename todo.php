@@ -2,6 +2,23 @@
 require_once "./db_connect.php";
 require_once "./base.php";
 ?>
+
+<?php
+if (!empty($_POST['deleteMultiple'])) {
+    $db = db();
+    $ids = $_POST['deleteMultiple'];
+
+    $query = "UPDATE tasks SET isDeleted = '1' WHERE id IN ($ids)";
+
+    foreach ($_POST['deleteMultiple'] as $check) {
+        echo "value = $check";
+        $query = "UPDATE tasks SET isDeleted = '1' WHERE id = '$check'";
+
+        mysqli_query($db, $query);
+    }
+    header('location: ./todo.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,105 +65,115 @@ require_once "./base.php";
         </div>
     </div>
 
-    <div class="d-flex justify-content-end mb-2">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Sort by
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" value='taskName'>Task Name</a>
-                <a class="dropdown-item" value='dueDate_asc'>Due Date - Asc</a>
-                <a class="dropdown-item" value='dueDate_desc'>Due Date - Desc</a>
-                <a class="dropdown-item" value='createdDate_asc'>Created Date - Asc</a>
-                <a class="dropdown-item" value='createdDate_desc'>Created Date - Desc</a>
+
+    <form action="todo.php" method="post">
+        <!-- top action buttons -->
+        <div class="d-flex justify-content-end mb-2">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort by
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" value='taskName'>Alphabetically</a>
+                    <a class="dropdown-item" value='dueDate_asc'>Due Date - Asc</a>
+                    <a class="dropdown-item" value='dueDate_desc'>Due Date - Desc</a>
+                    <a class="dropdown-item" value='createdDate_asc'>Created Date - Asc</a>
+                    <a class="dropdown-item" value='createdDate_desc'>Created Date - Desc</a>
+                </div>
             </div>
+
+            <input type="submit" class="btn btn-danger ml-2" value="Delete Selected" />
+
+
+            <!-- <button class="btn btn-danger ml-2" id="deleteAll" data-toggle="modal" data-target="#deleteAllModal">
+            Delete Selected
+        </button> -->
+
         </div>
-    </div>
+        <table class="table table-borderless" id="myTable">
+            <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>Tasks</th>
+                    <th>Created Date</th>
+                    <th>Due Date</th>
+                    <th> <input type="checkbox" name="chk_all" class="chk_all">
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-    <table class="table table-borderless" id="myTable">
-        <thead>
-            <tr>
-                <th>S/N</th>
-                <th>Tasks</th>
-                <th>Created Date</th>
-                <th>Due Date</th>
-                <th>Completed</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-
-            <?php
-
-            //how to acccess the value of the dropdown in php to dynamically change the values;
-            $sortBy = 'createdDate_desc';
-
-            if (isset($_GET['sortBy'])) {
-                $sortBy = $_GET['sortBy'];
-            }
-
-            $task = getAllTask($sortBy);
-
-            ?>
-            <?php
-            foreach ($task as $i => $row) {
-                $i++;
-            ?>
-            <tr id="task">
-
-                <td> <?php echo $i; ?> </td>
-                <td
-                    class="task <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
-                    <?php echo $row['task']; ?>
-                </td>
-
-                <td
-                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
-                    <?php echo date('g:ia \o\n D jS M Y', strtotime($row['createdAt'])) ?>
-                </td>
-
-                <td
-                    class="text-center <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
-                    <?php echo date('g:ia \o\n D jS M Y', strtotime($row['dueDate'])) ?>
-                </td>
+            <tbody>
 
 
-                <!-- Checkbox input -->
-                <td class="text-center completed">
-                    <input type="checkbox" name="isCompleted" id="isCompleted"
-                        <?php echo $row['isCompleted'] === "0" ? null : "checked" ?>>
-                </td>
+                <?php
 
-                <td class="text-center">
-                    <!-- delete <a> tag -->
-                    <a type="button" data-toggle="modal" data-id="<?php echo $row['id'] ?>" data-target="#deleteModal"
-                        title="Delete" class='delete' href="businesslogic.php?del_task=<?php echo $row['id'] ?>"> <i
-                            class='fa fa-trash'></i></a>
+                //how to acccess the value of the dropdown in php to dynamically change the values;
+                $sortBy = 'createdDate_desc';
 
-                    <!-- mark <a> tag-->
-                    <a type="button" data-toggle="modal" data-id="<?php echo $row['id'] ?>" data-target="#markModal"
-                        title="Mark" class='mark' href="businesslogic.php?mark_task=<?php echo $row['id'] ?>"> <i
-                            class='fa <?php echo $row['isCompleted'] == '0' ? 'fa-check' : 'fa-repeat'  ?>'></i></a>
+                if (isset($_GET['sortBy'])) {
+                    $sortBy = $_GET['sortBy'];
+                }
 
-                    <!-- edit <a> tag-->
-                    <a title="Edit" class='edit' role="button" href="updatetodo.php?id=<?php echo $row['id'] ?>"> <i
-                            class='fa fa-edit'></i></a>
-                </td>
-            </tr>
-            <?php
-            }
-            ?>
+                $task = getAllTask($sortBy);
 
-        </tbody>
-    </table>
+                ?>
+                <?php
+                foreach ($task as $i => $row) {
+                    $i++;
+                ?>
+                <tr id="task">
 
-    <!-- Create a hidden input -->
-    <form action="todo.php?sortBy=sortValue" method="get">
-        <input type='hidden' name='sortValue' value="createdDate_desc">
+                    <td> <?php echo $i; ?> </td>
+                    <td
+                        class="task <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                        <?php echo $row['task']; ?>
+                    </td>
+
+                    <td
+                        class="<?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                        <?php echo date('g:ia \o\n D jS M Y', strtotime($row['createdAt'])) ?>
+                    </td>
+
+                    <td
+                        class=" <?php echo strtotime($row['dueDate']) > strtotime(date('Y-m-d H:i:s')) ? null : 'text-danger' ?> <?php echo $row['isCompleted'] === "0" ? null : 'done' ?>">
+                        <?php echo date('g:ia \o\n D jS M Y', strtotime($row['dueDate'])) ?>
+                    </td>
+
+
+                    <!-- Checkbox input -->
+                    <td class=" ">
+                        <input type="checkbox" class="checkboxes" value="<?php echo $row['id'] ?>"
+                            name="deleteMultiple[]" id="deleteMultiple">
+                    </td>
+
+                    <td class="text-center">
+                        <!-- delete <a> tag -->
+                        <a type="button" data-toggle="modal" data-id="<?php echo $row['id'] ?>"
+                            data-target="#deleteModal" title="Delete" class='delete'
+                            href="businesslogic.php?del_task=<?php echo $row['id'] ?>"> <i class='fa fa-trash'></i></a>
+
+                        <!-- mark <a> tag-->
+                        <a type="button" data-toggle="modal" data-id="<?php echo $row['id'] ?>" data-target="#markModal"
+                            title="Mark" class='mark' href="businesslogic.php?mark_task=<?php echo $row['id'] ?>"> <i
+                                class='fa <?php echo $row['isCompleted'] == '0' ? 'fa-check' : 'fa-repeat'  ?>'></i></a>
+
+                        <!-- edit <a> tag-->
+                        <a title="Edit" class='edit' role="button" href="updatetodo.php?id=<?php echo $row['id'] ?>"> <i
+                                class='fa fa-edit'></i></a>
+                    </td>
+                </tr>
+                <?php
+                }
+                ?>
+
+            </tbody>
+        </table>
+
     </form>
+
+
 
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -195,6 +222,29 @@ require_once "./base.php";
             </div>
         </div>
     </div>
+    <!-- Delete all modal -->
+    <div class="modal fade" id="deleteAllModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Selected</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete these tasks?
+
+                    <input type="hidden" name="taskId" id="taskId" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Leave</button>
+                    <button type="button" id="mark_todo" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -237,9 +287,26 @@ $(document).ready(function() {
     });
 
 });
+
+$(document).ready(function() {
+    // binding the check all box to onClick event
+    $(".chk_all").click(function() {
+        var checkAll = $(".chk_all").prop('checked');
+        if (checkAll) {
+            $(".checkboxes").prop("checked", true);
+        } else {
+            $(".checkboxes").prop("checked", false);
+        }
+    });
+    // if all checkboxes are selected, then checked the main checkbox class and vise versa
+    $(".checkboxes").click(function() {
+        if ($(".checkboxes").length == $(".subscheked:checked").length) {
+            $(".chk_all").attr("checked", "checked");
+        } else {
+            $(".chk_all").removeAttr("checked");
+        }
+    });
+});
 </script>
-<td class="text-center delete ">
-    <button type="button" class="btn btn-danger">Delete Selected</button>
-</td>
 
 </html>
